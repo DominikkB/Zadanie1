@@ -7,7 +7,7 @@
   <title>Google</title>
   <meta name="description" content="Kopia strony Google">
   <meta name="author" content="Dominik Bednarz">
-  <link rel="stylesheet" href="css/style.css">
+  <script src="https://kit.fontawesome.com/a41d8e6654.js"></script>
   <style>
   html, body, div, span, applet, object, iframe,
 	h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -83,7 +83,7 @@
     -webkit-border-radius: 50%;
     border-radius: 50%;
     display: block;
-    margin: -1px;
+	margin-left: 15px;
     overflow: hidden;
     position: relative;
     height: 32px;
@@ -166,6 +166,36 @@
 		box-shadow: 0 1px 1px rgba(0,0,0,0.1);
 		color: #222;
 	}
+	.fas{
+		font-size: 18px;
+	}
+	.search-icon{
+		display: block;
+		position: absolute;
+		left: 15px;
+		top: 15px;
+		opacity: 1;
+	}
+	i{
+	color: #000;
+	opacity: .55;
+	cursor: pointer;
+	}
+	.fa-search{
+		color: #4285f4;
+	}
+	.search-input-keybord, .search-input-microphone{
+		display: block;
+		position: absolute;
+	}
+	.search-input-microphone{
+		right: 15px;
+		top: 14px;
+	}
+	.search-input-keybord{
+		right: 45px; 
+		top: 14px;
+	}
   </style>
 </head>
 
@@ -175,7 +205,7 @@
 		<nav>
 			<a href="#">Gmail</a>
 			<a href="#">Grafika</a>
-			<a href="#" title="Google apps"></a>
+			<a href="#" title="Google apps"><i class="fas fa-th"></i></a>
 			<a href="#" class="avatar" title="Dominik Bednarz IIE"></a>
 		</nav>
 	  </header>
@@ -183,7 +213,16 @@
         <img src="img/google.png" alt="Google logo na Dzień Dziecka 2019" />
       </section>
 	  <section class="search">
+		 <span class="search-icon">
+			<i class="fas fa-search"></i>
+		 </span>
 		 <input type="text" title="Szukaj">
+		 <span class="search-input-keybord">
+            <i class="fas fa-keyboard"></i>
+		 </span>
+		 <span class="search-input-microphone">
+            <i class="fas fa-microphone"></i>
+		 </span>
 	  </section>
 	  <section class="search-buttons">
 		<button>Google Search</button> 
