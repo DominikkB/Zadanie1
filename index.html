@@ -8,6 +8,8 @@
   <meta name="description" content="Kopia strony Google">
   <meta name="author" content="Dominik Bednarz">
   <script src="https://kit.fontawesome.com/a41d8e6654.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="animals.js"></script>
   <style>
   html, body, div, span, applet, object, iframe,
 	h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -120,7 +122,7 @@
     display: block;
     width: 100%;
     height: 100%;
-    padding: 0px 90px 0px 30px;
+    padding: 0px 90px 0px 45px;
     border: none;
     border-radius: 24px;
     outline: none;
@@ -167,13 +169,13 @@
 		color: #222;
 	}
 	.fas{
-		font-size: 18px;
+		font-size: 15px;
 	}
 	.search-icon{
 		display: block;
 		position: absolute;
 		left: 15px;
-		top: 15px;
+		top: 12px;
 		opacity: 1;
 	}
 	i{
@@ -190,11 +192,71 @@
 	}
 	.search-input-microphone{
 		right: 15px;
-		top: 14px;
+		top: 13px;
 	}
 	.search-input-keybord{
 		right: 45px; 
-		top: 14px;
+		top: 13px;
+	}
+	.input-autocomplete {
+		box-shadow: 1px 4px 5px 1px rgba(0,0,0,0.1);
+	}
+
+	.input-autocomplete-wrapper {
+	  display: none;
+	  position: relative;
+	  height: auto;
+	  width: 100%;
+	  margin: 0 auto;
+	}
+
+	.input-autocomplete-wrapper.active {
+	  display: flex;
+	  justify-content: center;
+	  margin-top: -94px;
+	}
+
+	.input-autocomplete {
+	  display: block;
+	  box-sizing: border-box;
+	  position: absolute;
+	  border-radius: 0 0 24px 24px;
+	  width: 584px;
+	  border: 1px solid #dfe1e5;
+	  border-top: 0px;
+	  background: white;
+	  margin-top: -8px;
+	  height: auto;
+	  padding: 0 0 1em 0;
+	}
+
+	.input-autocomplete-list {
+	  list-style-type: none;
+	  margin: 8px 0;
+	  padding: 0; 
+	}
+	.input-autocomplete-item {
+	  font-weight: 600;
+	  padding: 1px 30px;
+	  cursor: default;
+	  line-height: 1.9em;
+	}
+
+	.input-autocomplete-item:hover {
+	  background: #dfe1e5;
+	}
+
+	.input-autocomplete.active {
+	  border-top: 0px;
+	}
+
+	.input-autocomplete-separator {
+	  z-index: 1;
+	  position: absolute;
+	  top: 0px;
+	  border-top: 1px solid #dfe1e5;
+	  width: 542px;
+	  margin: 0;
 	}
   </style>
 </head>
@@ -216,7 +278,7 @@
 		 <span class="search-icon">
 			<i class="fas fa-search"></i>
 		 </span>
-		 <input type="text" title="Szukaj">
+		 <input v-model="inputContent" v-bind:class="activeClass" type="text" title="Szukaj">
 		 <span class="search-input-keybord">
             <i class="fas fa-keyboard"></i>
 		 </span>
@@ -224,10 +286,97 @@
             <i class="fas fa-microphone"></i>
 		 </span>
 	  </section>
+	   <v-autocompleter v-on:select-hint="changeInputContent($event)" v-bind:change-active-state="changeActiveState"
+        count="5" v-bind:input-content="inputContent" v-bind:is-active="isInputActive">
+      </v-autocompleter>
 	  <section class="search-buttons">
 		<button>Google Search</button> 
 		<button>I'm Feeling Lucky</button>
 	  </section>
   </div>
+   <script>
+	  Vue.component("v-autocompleter", {
+	  props: ['inputContent', 'isActive', 'count', 'changeActiveState'],
+	  data: function () {
+		return {
+		  animals: animals,
+		  hints: []
+		}
+	  },
+	  template:
+		`
+		  <div class="input-autocomplete-wrapper" v-bind:class="getClass">
+			<hr class="input-autocomplete-separator" />
+			<div class="input-autocomplete" v-bind:class="getClass">
+			  <ul class="input-autocomplete-list">
+				<li class="input-autocomplete-item" v-for="n in displayHints" v-on:click="selectHint">{{ n }}</li>
+			  </ul>
+			</div>
+		  </div>
+		`,
+	  computed: {
+		displayHints: function () {
+		  let filtered = [];
+		  if (this.inputContent !== '') {
+			filtered = this.animals.filter(
+			  (animal) =>
+				animal
+				  .toLowerCase()
+				  .startsWith(this.inputContent.toLowerCase()));
+		  }
+
+		  this.hints = filtered.slice(0, this.count);
+		  this.isSomeHints();
+		  return this.hints;
+		},
+		getClass: function () {
+		  return this.isActive ? 'active' : '';
+		}
+	  },
+	  methods: {
+		selectHint: function (event) {
+		  const hintValue = event.target.innerHTML
+		  this.$emit('select-hint', { 'value': hintValue });
+		},
+		isSomeHints: function () {
+		  let isActive;
+
+		  if (this.hints[0] === this.inputContent || this.inputContent === '' || this.hints.length === 0)
+			isActive = false;
+		  else {
+			isActive = true;
+		  }
+
+		  this.changeActiveState(isActive);
+		}
+	  }
+	})
+
+	new Vue({
+	  el: '#all',
+	  data() {
+		return {
+		  inputContent: "",
+		  isInputActive: false,
+		}
+	  },
+	  computed: {
+		activeClass() {
+		  return this.isInputActive ? 'active' : '';
+		}
+	  },
+	  methods: {
+		changeInputContent: function (params) {
+		  this.inputContent = params.value;
+		  this.isInputActive = false;
+		  this.isSelected = true;
+		},
+		changeActiveState: function (isActive) {
+		  this.isInputActive = isActive;
+		},
+
+	  }
+	})
+  </script>
 </body>
 </html>
